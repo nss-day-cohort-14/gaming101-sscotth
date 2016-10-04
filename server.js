@@ -22,6 +22,14 @@ mongoose.connect(MONGODB_URL, () => {
   server.listen(PORT, () => console.log(`Server listening on port: ${PORT}`))
 })
 
+const Game = mongoose.model('game', {
+  board: [
+    [String, String, String],
+    [String, String, String],
+    [String, String, String],
+  ]
+})
+
 io.on('connect', socket => {
   console.log(`Socket connected: ${socket.id}`)
   socket.on('disconnect', () => console.log(`Socket disconnected: ${socket.id}`))

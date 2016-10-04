@@ -1,3 +1,11 @@
 h1 {
   color: tomato;
 }
+
+td {
+  border: 1px solid black;
+  height: 100px;
+  width: 100px;
+  font-size: 80px;
+  text-align: center;
+}
