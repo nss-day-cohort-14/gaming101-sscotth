@@ -6,6 +6,7 @@ socket.on('connect', () => console.log(`Socket connected: ${socket.id}`))
 socket.on('disconnect', () => console.log('Socket disconnected'))
 socket.on('error', console.error)
 socket.on('new game', game => drawBoard(game.board))
+socket.on('move made', game => drawBoard(game.board))
 
 const board = document.querySelector('.board')
 const status = document.querySelector('.status')
@@ -96,8 +97,9 @@ board.addEventListener('click', evt => {
     return console.log('Game is over!')
   }
 
+  socket.emit('make move', { row, col })
+
   boardState[row][col] = nextPlayer
-  drawBoard(boardState)
   console.log('Current game state:', board)
 
   if (winner(boardState)) {
