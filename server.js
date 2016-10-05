@@ -28,12 +28,14 @@ const Game = mongoose.model('game', {
     [String, String, String],
     [String, String, String],
     [String, String, String],
-  ]
+  ],
+  toMove: String,
 })
 
 io.on('connect', socket => {
   Game.create({
-    board: [['','',''],['','',''],['','','']]
+    board: [['','',''],['','',''],['','','']],
+    toMove: 'X',
   })
   .then(g => {
     socket.game = g
@@ -45,7 +47,8 @@ io.on('connect', socket => {
   })
 
   socket.on('make move', ({ row, col }) => {
-    socket.game.board[row][col] = '💩'
+    socket.game.board[row][col] = socket.game.toMove
+    socket.game.toMove = socket.game.toMove === 'X' ? 'O' : 'X'
     socket.game.markModified('board') // trigger mongoose change detection
     socket.game.save().then(g => socket.emit('move made', g))
   })
