@@ -52,6 +52,10 @@ io.on('connect', socket => {
       return
     }
 
+    if (socket.game.board[row][col]) {
+      return
+    }
+
     socket.game.board[row][col] = socket.game.toMove
     socket.game.toMove = socket.game.toMove === 'X' ? 'O' : 'X'
     socket.game.markModified('board') // trigger mongoose change detection
