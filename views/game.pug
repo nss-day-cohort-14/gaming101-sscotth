@@ -5,8 +5,7 @@ html
     link(rel='stylesheet', href='/main.css')
   body
     h1 Tickie Tackie Toe
-
-    h2 Select a game
-    ul
-      for game in games
-        li: a(href=`/game/${game._id}`) Game: #{game._id}
+    .status
+    .board
+    script(src='/socket.io/socket.io.js')
+    script(src='/main.js')
