@@ -4,6 +4,8 @@ const socket = io()
 
 socket.on('connect', () => console.log(`Socket connected: ${socket.id}`))
 socket.on('disconnect', () => console.log('Socket disconnected'))
+socket.on('error', console.error)
+socket.on('new game', game => drawBoard(game.board))
 
 const board = document.querySelector('.board')
 const status = document.querySelector('.status')
@@ -81,8 +83,6 @@ const winner = b => {
     return null
   }
 }
-
-drawBoard(boardState)
 
 board.addEventListener('click', evt => {
   const col = evt.target.cellIndex
