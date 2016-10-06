@@ -48,6 +48,7 @@ const Game = mongoose.model('game', {
       ['','',''],
     ],
   },
+  result: String,
   toMove: String,
   player1: String,
   player2: String,
@@ -92,7 +93,12 @@ const makeMove = (move, socket) => {
 }
 
 const attemptToJoinGameAsPlayer = (game, socket) => {
+  if (hasTwoPlayers(game)) {
+    return game
+  }
+
   const playerNumber = randomPlayerNumber()
+
   if (hasZeroPlayers(game)) {
     game[`player${playerNumber}`] = socket.id
   } else if (game.player1 && !game.player2) {
