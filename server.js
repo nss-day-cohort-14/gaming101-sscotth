@@ -81,7 +81,7 @@ io.on('connect', socket => {
 const makeMove = (move, socket) => {
   Game.findById(socket.gameId)
     .then(game => {
-      if (isFinished(game) || !isSpaceAvailable(game, move)) {
+      if (isFinished(game) || !isSpaceAvailable(game, move) || !isPlayersTurn(game, socket)) {
         return Promise.reject('Cannot move')
       }
       return game
@@ -107,7 +107,9 @@ const attemptToJoinGameAsPlayer = (game, socket) => {
 
   return game
 }
-
+const isPlayersTurn = (game, socket) => game.toMove === 'X'
+  ? game.player1 === socket.id
+  : game.player2 === socket.id
 const randomPlayerNumber = () => Math.round(Math.random()) + 1
 const hasZeroPlayers = game => !game.player1 && !game.player2
 const hasTwoPlayers = game => !!(game.player1 && game.player2)
