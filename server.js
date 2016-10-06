@@ -63,7 +63,7 @@ io.on('connect', socket => {
   .then(g => {
     socket.join(g._id)
     socket.gameId = g._id
-    socket.emit('new game', g)
+    io.to(g._id).emit('player joined', g)
   })
   .catch(err => {
     socket.emit('error', err)
@@ -73,8 +73,23 @@ io.on('connect', socket => {
   console.log(`Socket connected: ${socket.id}`)
 
   socket.on('make move', move => makeMove(move, socket))
-  socket.on('disconnect', () => console.log(`Socket disconnected: ${socket.id}`))
+  socket.on('disconnect', () => handleDisconnect(socket))
 })
+
+const handleDisconnect = socket => {
+  Game
+    .findById(socket.gameId)
+    .then(game => {
+      if (!game.result && (socket.id === game.player1 || socket.id === game.player2)) {
+        console.log('yes')
+        game.toMove = undefined
+        game.result = 'Disconnect'
+      }
+      return game.save()
+    })
+    .then(g => io.to(g._id).emit('player disconnected', g))
+    .catch(console.error)
+}
 
 const makeMove = (move, socket) => {
   Game.findById(socket.gameId)

@@ -10,8 +10,16 @@ const renderStatus = game => {
     return status.innerText = "It's a tie!"
   }
 
+  if (game.result === 'Disconnect') {
+    return status.innerText = 'Player disconnected'
+  }
+
   if (game.result) {
     return status.innerText = `${game.result} WON!`
+  }
+
+  if (!game.player1 || !game.player2) {
+    return status.innerText = 'Waiting for additional player'
   }
 
   if (game.toMove === `/#${socket.id}`) {
@@ -60,5 +68,6 @@ const render = game => {
 socket.on('connect', () => console.log(`Socket connected: ${socket.id}`))
 socket.on('disconnect', () => console.log('Socket disconnected'))
 socket.on('error', console.error)
-socket.on('new game', render)
+socket.on('player joined', render)
+socket.on('player disconnected', render)
 socket.on('move made', render)
