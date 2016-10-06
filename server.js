@@ -22,13 +22,9 @@ app.get('/game', (req, res) =>
   Game.find().then(games => res.render('index', { games }))
 )
 
-app.get('/game/create', (req, res) => {
-  Game.create({
-    board: [['','',''],['','',''],['','','']],
-    toMove: 'X',
-  })
-  .then(game => res.redirect(`/game/${game._id}`))
-})
+app.get('/game/create', (req, res) =>
+  Game.create({}).then(game => res.redirect(`/game/${game._id}`))
+)
 
 app.get('/game/:id', (req, res) => {
   res.render('game')
@@ -40,13 +36,22 @@ mongoose.connect(MONGODB_URL, () => {
 })
 
 const Game = mongoose.model('game', {
-  board: [
-    [String, String, String],
-    [String, String, String],
-    [String, String, String],
-  ],
-  toMove: String,
-  result: String,
+  board: {
+    type: [
+      [String, String, String],
+      [String, String, String],
+      [String, String, String],
+    ],
+    default: [
+      ['','',''],
+      ['','',''],
+      ['','',''],
+    ],
+  },
+  toMove: {
+    type: String,
+    default: 'X',
+  },
 })
 
 io.on('connect', socket => {
