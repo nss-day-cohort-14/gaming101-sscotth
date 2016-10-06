@@ -48,10 +48,7 @@ const Game = mongoose.model('game', {
       ['','',''],
     ],
   },
-  toMove: {
-    type: String,
-    default: 'X',
-  },
+  toMove: String,
   player1: String,
   player2: String,
 })
@@ -95,8 +92,9 @@ const makeMove = (move, socket) => {
 }
 
 const attemptToJoinGameAsPlayer = (game, socket) => {
+  const playerNumber = randomPlayerNumber()
   if (hasZeroPlayers(game)) {
-    game[`player${randomPlayerNumber()}`] = socket.id
+    game[`player${playerNumber}`] = socket.id
   } else if (game.player1 && !game.player2) {
     // player1 already connected and player2 is available
     game.player2 = socket.id
@@ -105,23 +103,26 @@ const attemptToJoinGameAsPlayer = (game, socket) => {
     game.player1 = socket.id
   }
 
+  if (playerNumber === 1) {
+    game.toMove = socket.id
+  }
+
   return game
 }
-const isPlayersTurn = (game, socket) => game.toMove === 'X'
-  ? game.player1 === socket.id
-  : game.player2 === socket.id
+const nextMoveToken = game => game.toMove === game.player1 ? 'X' : 'O'
+const isPlayersTurn = (game, socket) => game.toMove === socket.id
 const randomPlayerNumber = () => Math.round(Math.random()) + 1
 const hasZeroPlayers = game => !game.player1 && !game.player2
 const hasTwoPlayers = game => !!(game.player1 && game.player2)
 const isFinished = game => !!game.result
 const isSpaceAvailable = (game, move) => !game.board[move.row][move.col]
 const setMove = (game, move) => {
-  game.board[move.row][move.col] = game.toMove
+  game.board[move.row][move.col] = nextMoveToken(game)
   game.markModified('board') // trigger mongoose change detection
   return game
 }
 const toggleNextMove = game => {
-  game.toMove = game.toMove === 'X' ? 'O' : 'X'
+  game.toMove = game.toMove === game.player1 ? game.player2 : game.player1
   return game
 }
 const setResult = game => {
