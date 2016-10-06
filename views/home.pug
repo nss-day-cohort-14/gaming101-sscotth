@@ -7,5 +7,8 @@ html
     h1 Tickie Tackie Toe
     .create
       a(href='/game/create') Start new game
-    .join
-      a(href='/game') Join a game
+    if games.length
+      .join
+        h2 Join a game
+        for game in games
+          li: a(href=`/game/${game._id}`) Game: #{game._id}

@@ -16,10 +16,11 @@ app.set('view engine', 'pug')
 
 app.use(express.static('public'))
 
-app.get('/', (req, res) => res.render('home'))
-
-app.get('/game', (req, res) =>
-  Game.find().then(games => res.render('index', { games }))
+app.get('/', (req, res) =>
+  Game.find()
+  .or([{ player1: { $exists: false } }, { player2: { $exists: false } }])
+  .exists('result', false)
+  .then(games => res.render('home', { games }))
 )
 
 app.get('/game/create', (req, res) =>
